@@ -5,10 +5,10 @@
 session_start();
 $number_task = $_SESSION['number'];
 
-if($_POST['trello_token'] && $_POST['trello_api_key'] && $_POST['trello_token']){
+if($_POST['trello_token'] && $_POST['trello_api_key'] && $_POST['userid']){
 	$_SESSION['trello_token']= $_POST['trello_token'];
 	$_SESSION['trello_api_key']= $_POST['trello_api_key'];
-	$_SESSION['userid']= $_POST['trello_token'];
+	$_SESSION['userid']= $_POST['userid'];
 
 	setcookie('trello_token', $_SESSION['trello_token'], strtotime( '+30 days' ));
 	setcookie('trello_api_key', $_SESSION['trello_api_key'], strtotime( '+30 days' ));
@@ -17,15 +17,13 @@ if($_POST['trello_token'] && $_POST['trello_api_key'] && $_POST['trello_token'])
 if($_POST['destination_board'] && $_POST['destination_list']){
 	$_SESSION['destination_board'] = $_POST['destination_board'];
 	$_SESSION['destination_list'] = $_POST['destination_list'];
+	header('Location:task_insert_to_trello.php');
 }
 
 for($i=0;$i<$number_task;$i++){
 	$task[$i] = $_SESSION['task'][$i]['body'];
 }
 
-if(!$login){
-
-}
 ?>
 
 <!DOCTYPE html>
@@ -103,7 +101,7 @@ if(!$login){
 	<form action="tasks_select.php" method="POST" >
 		<label><p class="string1">トレロのアクセストークン：<input type="text" name="trello_token" id="form1" class="textbox" value="<?php echo isset($_COOKIE['trello_token']) ? $_COOKIE['trello_token']:'' ?>"/></p></label>
 		<label><p class="string1">トレロのAPIkey：<input type="text" name="trello_api_key" id="form2" class="textbox" value="<?php echo isset($_COOKIE['trello_api_key']) ? $_COOKIE['trello_api_key']:'' ?>"/></p></label>
-		<label><p class="string1">トレロのユーザID<input type="text" name="trello_userid" id="form6" class="textbox" value="<?php echo isset($_COOKIE['userid']) ? $_COOKIE['userid']:'' ?>"/></p></label>
+		<label><p class="string1">トレロのユーザID<input type="text" name="userid" id="form6" class="textbox" value="<?php echo isset($_COOKIE['userid']) ? $_COOKIE['userid']:'' ?>"/></p></label>
 		<label><p class="string1">トレロの挿入先ボードを指定：<input type="text" name="destination_board" id="form3" class="textbox"></p></label>
 		<label><p class="string1">トレロの挿入先リストを指定：<input type="text" name="destination_list" id="form4" class="textbox"></p></label>
 		<p id="button"><input type="submit" id="form5" class="textbox"></p>

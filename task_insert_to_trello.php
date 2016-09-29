@@ -7,33 +7,26 @@ use Trello\Client;
 session_start();
 $number_task = $_SESSION['number'];
 $chatwork_token = $_SESSION['chatwork_token'];
-$userid = $_SESSION['trello_userid'];
+$userid = $_SESSION['userid'];
 
 for($i=0;$i<$number_task;$i++){
 	$task[$i] = $_SESSION['task'][$i]['body'];
 	$task_limit[$i] = $_SESSION['task'][$i]['limit_time'];
 }
 
-
 if(!empty($_SESSION['trello_api_key']) && !empty($_SESSION['trello_token'])){
-
 	$trello_api_key = $_SESSION['trello_api_key'];
 	$trello_token = $_SESSION['trello_token'];
-	$userid = $_SESSION['userid'];
-
 }
 
 $client = new Client();
 
 $client->authenticate($trello_api_key, $trello_token, Client::AUTH_URL_CLIENT_ID);
 $boards = $client -> members() -> boards() -> all($userid);
-
 $number_board = count($boards);
-
 
 if(empty($_SESSION['destination_board']) || empty($_SESSION['destination_list'])){
 	header('Location:tasks_select.php');
-	echo "<p>入力してください</p>";
 }else{
 	$destination_board = $_SESSION['destination_board'];
 }
@@ -60,13 +53,10 @@ for($i=0;$i<$number_card;$i++){
 
 if(empty($destination_list_id)){
 	header('Location: tasks_select.php');
-	echo "<p>aaaaaaaaaa</p>";
 }else{
-
 	$dsn = 'mysql:dbname=chatrello;host=localhost';
 	$user = 'root';
 	$password = '0000';
-
 	try{
 		    $dbh = new PDO($dsn, $user, $password);
 		    $query = "select * from user where chatwork_token = :chatwork_token";
@@ -75,20 +65,21 @@ if(empty($destination_list_id)){
 		    $stmt->execute();
 
 		    $result = $stmt->fetchAll();
-		    var_dump($result);
 
 		    if($result[0]['trello_token'] == $trello_token && $result[0]['trello_api_key'] == $trello_api_key){	
 		    	for($i=0;$i<$number_task;$i++){
 					$task_name = $task[$i];
-					$task_limit_time = date('Y-m-d\TH:m:s.000\Z', $task_limit[$i]);
+					$task_limit_2 = $task_limit[$i];
+ 					$task_limit_time = date('Y-m-d\TH:i:s.000\Z', $task_limit_2);
 					for($j=0;$j<$number_card;$j++){
+						
 						if($task_name == $Cards[$j]['name'] && $task_limit_time == $Cards[$j]['due']){
 							goto fin1;
 						}else{
 							continue;
 						}
 					}
-					$param = array('idList'=>"$destination_list_id",'name'=>"$task_name",'due' => "$task_limit_time");
+					$param = array('idList'=> $destination_list_id ,'name'=> $task_name ,'due' =>  $task_limit_time);
 					$client->cards()->create($param);
 					fin1:
 				}
@@ -102,7 +93,8 @@ if(empty($destination_list_id)){
 
 		    	for($i=0;$i<$number_task;$i++){//引数が多かったのでコピペで済ませました。
 					$task_name = $task[$i];
-					$task_limit_time = date('Y-m-d\TH:m:s.000\Z', $task_limit[$i]);
+					$time = $task_limit[$i];
+					$task_limit_time = date('Y-m-d\TH:i:s.000\Z', $time);
 					for($j=0;$j<$number_card;$j++){
 						if($task_name == $Cards[$j]['name'] && $task_limit_time == $Cards[$j]['due']){
 							goto fin2;
@@ -110,17 +102,16 @@ if(empty($destination_list_id)){
 							continue;
 						}
 					}
+					$param = array('idList'=> $destination_list_id ,'name'=> $task_name ,'due' => $task_limit_time);
+					$client->cards()->create($param);
+					fin2:
 				}
-				$param = array('idList'=>"$destination_list_id",'name'=>"$task_name",'due' => "$task_limit_time");
-				$client->cards()->create($param);
-				fin2:
 			}
 		} catch (PDOException $e){
 	    	print('Error:'.$e->getMessage());
 	    	die();
 	}
 }
-
 ?>
 <!DOCTYPE html>
 <html>
@@ -136,5 +127,6 @@ if(empty($destination_list_id)){
 </head>
 <body>
  <p id="message">挿入完了！</p>
+ <p><a href="https://trello.com/">Trelloのページに行く</p>
 </body>
 </html>

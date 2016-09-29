@@ -45,7 +45,6 @@
               );
     $json_me = file_get_contents('https://api.chatwork.com/v1/me', false, stream_context_create($context));
     //chatworkから情報を取得
-
     if (empty($json_me)) {
           $login = false;
           $errors[] = '本人の情報を取得できません。';
@@ -64,7 +63,6 @@
               $task = json_decode($task_json, true);
 
               $_SESSION['task'] = $task;
-              
               $_SESSION['number'] = $number;
 
               if(empty($task)){
@@ -139,6 +137,50 @@ if(!$login){
 </head>
 <body>
   <h1 id="text">チャットワークのタスクをトレロにつっこみます</h1>
+  <h2>必要な持ち物<h2>
+  <ul>
+    <li class="string2">chatworkトークン</li>
+    <li class="string2">TrelloユーザID</li>
+    <li class="string2">Trelloトークン</li>
+    <li class="string2">TrelloAPIKey</li>
+  </ul>
+  <hr />
+  <h3>chatworkトークン取得方法</h3>
+    <ol>
+      <li>チャットワークAPIに申し込む</li>
+        <p><a href="https://www.chatwork.com/service/packages/chatwork/subpackages/api/apply_beta.php">申し込みページ</a></p>
+        <p>※以下の件名のメールが届けば申し込み完了</p>
+        <p>subject：【チャットワーク】チャットワークAPI（プレビュー版）ご利用開始のお知らせ</p>
+        <p>メールが届くまでに多少時間がかかります。</p>
+      <li>下記サイトの「チャットワークAPIのAPIトークンを発行してもらう」項目内の手順でトークンを発行し記録</li>
+        <a href="http://hm-solution.jp/web/post3762.html">http://hm-solution.jp/web/post3762.html</a>
+    </ol>
+  <hr />
+  <h3>TrelloユーザID取得方法</h3>
+    <ol>
+      <li>Trelloにログインする</li>
+      <li>画面右上の自分のユーザーネームをクリックしプロフィール画面に行く</li>
+      <li>名前の右下に表示された@以下がユーザーIDになります</li>
+        <p>※@は含まれない</p>
+    </ol>
+  <hr />
+  <h3>TrelloAPIKey & Trelloトークン取得方法</h3>
+    <ol>
+      <li>Trelloにログインする</li>
+      <li>Developer API Keysの取得</li>
+      <ol>  
+        <li><a href="https://trello.com/1/appKey/generate">https://trello.com/1/appKey/generate</a>にアクセスする</li>
+        <li>上部にあるKeyを記録</li>
+      </ol>
+      <li>トークンの取得</li>
+      <ol>
+        <li><a href="https://trello.com/1/appKey/generate">https://trello.com/1/appKey/generate</a>にアクセスする</li>
+        <li> ページ上部にある「あなたは手動でTokenを作られます。」の「Token」の部分をクリック</li>
+        <li>「許可」をクリック</li>
+        <li> 表示されたトークンを記録</li>
+      </ol>
+    </ol>
+  <hr />
   <form action="index.php" method="POST">
   <div>
   <label><p class="string">チャットワークのアクセストークン：<input type="text" name="chatwork_token" id="textbox1" class="form"/></p></label>
